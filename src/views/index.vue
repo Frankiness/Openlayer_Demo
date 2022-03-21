@@ -1,113 +1,69 @@
 <template>
-  <div id="map" class="map"></div>
+  <div class="index_container">
+    <a-layout>
+      <a-layout-sider>
+        <a-menu theme="dark" mode="inline" @click="handleClick">
+          <a-menu-item
+            :key="item.key"
+            v-for="(item, index) in menuList"
+            v-model:selectedKeys="item.key"
+          >
+            <span>{{ item.title }}</span>
+          </a-menu-item>
+        </a-menu>
+      </a-layout-sider>
+      <a-layout>
+        <a-layout-header
+          style="
+            background: #fff;
+            padding: 12px;
+            line-height: 32px;
+            font-size: 20px;
+          "
+        >
+          <span class="textTitle">{{ currentText }}</span>
+        </a-layout-header>
+        <a-layout-content
+          :style="{
+            margin: '12px 8px',
+            padding: '12px',
+            background: '#fff',
+            minHeight: '280px',
+            position: 'relative',
+          }"
+        >
+          <router-view></router-view>
+        </a-layout-content>
+      </a-layout>
+    </a-layout>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"; // vue相关方法
-import { Map, View } from "ol"; // 地图实例方法、视图方法
-import {OSM, Vector as VectorSource} from 'ol/source';// OSM瓦片【OSM不能在实际开发中使用，因为OSM里中国地图的边界有点问题！！！！
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-import {
-  Control,
-  defaults as defaultControls,
-  FullScreen,
-  OverviewMap,
-  ScaleLine,
-} from "ol/control";
-import "ol/ol.css"; // 地图样式
-
-const source = new OSM();
-const view = new View({
-  center: [-9101767, 2822912],
-  zoom: 14,
-});
-// 缩略图
-const overviewMapControl = new OverviewMap({
-  className: "ol-overviewmap ol-custom-overviewmap", //自定义样式
-  layers: [
-    new TileLayer({
-      source: source,
-    }),
-  ],
-  collapsed: false,
-});
-// initial map
-const initMap = () => {
-  const map = new Map({
-    controls: defaultControls().extend([
-      new FullScreen(),
-      overviewMapControl,
-      new ScaleLine(),
-    ]),
-    layers: [
-      new TileLayer({
-        source: source,
-      }),
-    ],
-    target: "map",
-    view: view,
-  });
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const selectedKeys = ["BaseMap"];
+let menuList = reactive([
+  { title: "基础图层", key: "BaseMap" },
+  { title: "绘制功能", key: "Interaction" },
+  { title: "Icon聚合", key: "Clustered" },
+  { title: "矢量几何图形绑定事件", key: "HitDetection" },
+]);
+let currentText = ref("BaseMap");
+const handleClick = (e) => {
+  currentText.value = e.key;
+  router.push(`/${e.key}`);
 };
-onMounted(() => {
-  initMap();
-});
 </script>
 
 <style lang="less" scoped>
-.map {
+.index_container {
   width: 100%;
-  height: 800px;
-}
-.map:-webkit-full-screen {
-  height: 100%;
-  margin: 0;
-}
-.map:-ms-fullscreen {
   height: 100%;
 }
-.map:fullscreen {
+
+.ant-layout {
   height: 100%;
-}
-.map .ol-rotate {
-  top: 3em;
-}
-//缩略图样式
-
-.ol-overviewmap {
-  right: 0.1rem;
-  bottom: 0.1rem;
-}
-.map .ol-custom-overviewmap,
-.map .ol-custom-overviewmap.ol-uncollapsible {
-  // bottom: auto;
-  // left: auto;
-  right: 0;
-  bottom: 0;
-  position: absolute;
-}
-
-.map .ol-custom-overviewmap:not(.ol-collapsed) {
-  border: 1px solid black;
-}
-
-.map .ol-custom-overviewmap .ol-overviewmap-map {
-  border: none;
-  width: 300px;
-}
-
-.map .ol-custom-overviewmap .ol-overviewmap-box {
-  border: 2px solid red;
-}
-
-.map .ol-custom-overviewmap:not(.ol-collapsed) button {
-  bottom: auto;
-  left: auto;
-  right: 1px;
-  top: 1px;
-}
-
-.map .ol-rotate {
-  top: 170px;
-  right: 0;
 }
 </style>

@@ -20,25 +20,21 @@ import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer";
 import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
 import { Draw, Modify, Snap } from "ol/interaction";
 import { get } from "ol/proj";
-import {
-  Control,
-  defaults as defaultControls,
-  FullScreen,
-  OverviewMap,
-  ScaleLine,
-} from "ol/control";
+import { defaults as defaultControls, FullScreen, ScaleLine } from "ol/control";
 import "ol/ol.css"; // 地图样式
 
 const tile = new TileLayer({
   source: new OSM(),
 });
 const extent = get("EPSG:3857").getExtent().slice();
+
 extent[0] += extent[0];
 extent[2] += extent[2];
+console.log(extent);
 const view = new View({
   center: [-9101767, 2822912],
-  zoom: 14,
-  extent,
+  zoom: 16, //地图显示层级
+  extent: [-572513.341856, 5211017.966314, 916327.095083, 6636950.728974], //限定视图的范围
 });
 const source = new VectorSource();
 let map = null;
@@ -65,7 +61,6 @@ const vector = new VectorLayer({
 });
 let draw,
   snap = new Snap({ source: source });
-// let textValue = ref("Point");
 const options = ref([
   {
     value: "Point",
@@ -98,7 +93,6 @@ const drawPolygon = (type) => {
     type: type,
   });
   map.addInteraction(draw);
-
   map.addInteraction(snap);
 };
 // 移除绘制事件
@@ -129,12 +123,12 @@ onMounted(() => {
 <style lang="less" scoped>
 .map {
   width: 100%;
-  height: 800px;
+  height: 650px;
 }
 .selection {
   position: absolute;
-  left: 3rem;
-  top: 1rem;
+  left: 4rem;
+  top: 1.5rem;
   z-index: 1000;
 }
 </style>

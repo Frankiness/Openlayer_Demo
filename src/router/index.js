@@ -1,16 +1,30 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import Index from "../views/index.vue";
-import Interaction from "../views/Interaction.vue";
+import BaseMap from "../views/BaseMap.vue";
 const routes = [
   {
     path: "/",
-    name: "index",
-    component: Index,
+    name: "BaseMap",
+    component: BaseMap,
+  },
+  {
+    path: "/BaseMap",
+    name: "BaseMap",
+    component: () => import("../views/BaseMap.vue"),
   },
   {
     path: "/Interaction",
     name: "Interaction",
     component: () => import("../views/Interaction.vue"),
+  },
+  {
+    path: "/Clustered",
+    name: "Clustered",
+    component: () => import("../views/ClusteredFeature.vue"),
+  },
+  {
+    path: "/HitDetection",
+    name: "HitDetection",
+    component: () => import("../views/CustomHitDetection.vue"),
   },
 ];
 
