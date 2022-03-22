@@ -1,18 +1,20 @@
 <template>
   <div id="map" class="map"></div>
+  <Popup :identity="identity"></Popup>
 </template>
 
 <script setup>
-import { onMounted } from "vue"; // vue相关方法
-import { Map, View, Feature } from "ol"; // 地图实例方法、视图方法
+import { onMounted, reactive, ref } from "vue"; // vue相关方法
+import { Map, View, Feature, Overlay } from "ol"; // 地图实例方法、视图方法
 import { OSM, Cluster, Vector as VectorSource } from "ol/source"; // OSM瓦片【OSM不能在实际开发中使用，因为OSM里中国地图的边界有点问题！！！！
 import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer";
 import { defaults as defaultControls, FullScreen, ScaleLine } from "ol/control";
 import Point from "ol/geom/Point";
 import "ol/ol.css"; // 地图样式
 import { Circle as CircleStyle, Fill, Stroke, Style, Text } from "ol/style";
-import { boundingExtent } from "ol/extent";
+import Popup from "../components/Popup.vue";
 
+let identity = ref("");
 const tile = new TileLayer({
   source: new OSM(),
 });
@@ -24,8 +26,8 @@ let map = null;
 let clusters = null;
 // icon聚合代码
 const createCluster = () => {
-  const count = 20000;
-  const features = new Array(20000);
+  const count = 200;
+  const features = new Array(200);
   const e = 4500000;
   // 生成点位数组
   // Feature是描述几何性质的的矢量对象
@@ -49,7 +51,7 @@ const createCluster = () => {
     // 为每个point指定样式
     style: function (feature) {
       const size = feature.get("features").length;
-      let style = styleCache[size];//判断是否已存在样式
+      let style = styleCache[size]; //判断是否已存在样式
       if (!style) {
         style = new Style({
           image: new CircleStyle({
@@ -74,7 +76,19 @@ const createCluster = () => {
     },
   });
 };
-
+let popup;
+let shopPopup = false;
+const addOverlay = () => {
+  // 创建Overlay
+  let elPopup = document.querySelector("#popup");
+  popup = new Overlay({
+    element: elPopup,
+    positioning: "bottom-center",
+    stopEvent: false,
+    offset: [0, -20],
+  });
+  map.addOverlay(popup);
+};
 // initial map
 const initMap = () => {
   map = new Map({
@@ -83,7 +97,28 @@ const initMap = () => {
     target: "map",
     view: view,
   });
+  singleclick();
 };
+const singleclick = () => {
+  // 点击
+  map.on("pointermove", (e) => {
+    addOverlay();
+    // 判断是否点击在点上
+    let feature = map.forEachFeatureAtPixel(e.pixel, (feature) => feature);
+    // console.log(feature);
+    if (feature) {
+      shopPopup = true;
+      // 设置弹窗位置
+      let coordinates = feature.getGeometry().getCoordinates();
+      popup.setPosition(coordinates);
+
+      identity.value = feature.ol_uid;
+    } else {
+      shopPopup = false;
+    }
+  });
+};
+
 onMounted(() => {
   createCluster();
   initMap();
@@ -93,6 +128,6 @@ onMounted(() => {
 <style lang="less" scoped>
 .map {
   width: 100%;
- height: 650px;
+  height: 650px;
 }
 </style>

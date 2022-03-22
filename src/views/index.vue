@@ -47,8 +47,10 @@ const selectedKeys = ["BaseMap"];
 let menuList = reactive([
   { title: "基础图层", key: "BaseMap" },
   { title: "绘制功能", key: "Interaction" },
-  { title: "Icon聚合", key: "Clustered" },
+  { title: "Icon聚合与popup", key: "Clustered" },
   { title: "矢量几何图形绑定事件", key: "HitDetection" },
+  { title: "手绘几何形状", key: "FreehandDrawing" },
+  { title: "汽车轨迹", key: "VehicleTrack" },
 ]);
 let currentText = ref("BaseMap");
 const handleClick = (e) => {
