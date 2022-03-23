@@ -30,7 +30,6 @@ const extent = get("EPSG:3857").getExtent().slice();
 
 extent[0] += extent[0];
 extent[2] += extent[2];
-console.log(extent);
 const view = new View({
   center: [-9101767, 2822912],
   zoom: 16, //地图显示层级

@@ -105,7 +105,6 @@ const singleclick = () => {
     addOverlay();
     // 判断是否点击在点上
     let feature = map.forEachFeatureAtPixel(e.pixel, (feature) => feature);
-    // console.log(feature);
     if (feature) {
       shopPopup = true;
       // 设置弹窗位置
